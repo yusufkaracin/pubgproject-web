@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Should you sell your PUBG crate or open it?">
+  <title>{% block title %}HOME{% endblock %} | OPEN OR SELL</title>
+  <link rel="stylesheet" href="/static/css/bulma.css">
+  <style>
+    html {
+      background-color: #dddddd;
+    }
+  </style>
+  {% block style %}{% endblock %}
+</head>
+<body>
+  <div class="container is-fullhd">
+    {% block content %}{% endblock %}
+  </div>
+  <footer class="footer">
+    <div class="container">
+      <div class="content">
+        <h3 id="how-works">How is it working?</h3>
+        <p>Very simple.</p>
+        <p>
+          Let's assume we have a crate and lowest Steam price of that crate is $5.
+          <br>
+          Count of items in the crate which more expensive than $5 is <strong>X</strong>
+          <br>
+          Count of items which cheaper than $5 is <strong>Y</strong>
+          <br>
+          If <strong>X</strong> => <strong>Y</strong> than better to open the crate, right?
+        </p>
+        <p>
+          This application, collects crate data and groups items by their Steam price.
+          So you can see the possibility of the item being more expensive than the crate.
+        </p>
+        <h4 id="why">Why?</h4>
+        <p>
+          This is a hobby project. It helps me to decide if i should open crate or sell it.
+          I think, maybe there are other players who wants to see possibilities about their crate and i can help them.
+        </p>
+        <p class="has-text-centered">
+          <small>
+            <strong>
+              This application does not provide investment advice. It was not considered key price if
+              crate needs a key to open it.
+              <br>
+              Crate data are not real time. The data are updated periodically. Data are collected
+              from <a href="https://pubgshowcase.com/" target="_blank">pubgshowcase.com</a>
+            </strong>
+            <br>
+            &copy; {{ ''|current_year }}
+          </small>
+        </p>
+      </div>
+
+    </div>
+  </footer>
+  {% block js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="hero is-primary is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">Should you sell your PUBG crate or open it?</h1>
+        <a class="button is-primary is-inverted" href="#crates">Select your crate to start</a>
+        <br>
+        <a href="#how-works"><span class="tag">How is it working?</span></a>
+        <br>
+        <a href="#why"><span class="tag">Why?</span></a>
+      </div>
+    </div>
+  </section>
+
+  <div class="tile is-ancestor is-multiline columns">
+    {% for crate in crates %}
+      <div class="tile is-4 is-parent column">
+        <div class="card tile is-child">
+          <progress
+            class="progress is-small is-radiusless is-marginless is-success"
+            value="{{ crate['items']['expensive']['percent'] }}"
+            max="100"
+            title="{{ crate['items']['decision'] }}"
+          >
+          </progress>
+          <small>
+            Expensive item drop chance <span class="tag">{{ crate['items']['expensive']['percent'] }}%</span>
+          </small>
+          <div class="card-image">
+            <figure class="image is-4by3">
+              <a href="{{ crate.absolute_url }}">
+                <img src="{{ crate.img }}" alt="{{ crate.name }}">
+              </a>
+            </figure>
+          </div>
+          <div class="card-content">
+            <p class="title is-4">
+              <a href="{{ crate.absolute_url }}">
+                {{ crate.name }} <span class="tag">{{ crate['items']['decision'] }}</span>
+              </a>
+            </p>
+            <p class="subtitle is-6" title="Steam Price">${{ crate.steam_price }}
+              <small>on Steam</small>
+            </p>
+
+            <div class="content">
+              <ul>
+                {% if crate.need_key %}
+                  <li>
+                    <span class="tag is-warning">
+                      You need a key to open this crate.
+                    </span>
+                  </li>
+                {% endif %}
+                <li>
+                  Updated
+                  <time datetime="{{ crate.created_at }}" class="tag is-light">
+                    {{ crate.created_at|since }}
+                  </time>
+                  ago
+                </li>
+              </ul>
+            </div>
+
+            <div class="card-footer">
+              <a href="{{ crate.absolute_url }}" class="card-footer-item button is-medium is-link">
+                Details
+              </a>
+            </div>
+            <footer class="card-footer">
+              <a href="{{ crate.steam_url }}" target="_blank" class="card-footer-item has-text-grey-dark is-small">
+                Check it on Steam
+              </a>
+              <a href="{{ crate.url }}" target="_blank" class="card-footer-item has-text-grey-dark is-size-7">
+                Check it on PUBG Showcase
+              </a>
+            </footer>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

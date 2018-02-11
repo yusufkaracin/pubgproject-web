@@ -1,0 +1,46 @@
+<div class="tile is-ancestor is-multiline columns">
+  {% for item in items %}
+    <div class="tile is-4 is-parent column">
+      <div class="card tile is-child">
+        <div class="card-image">
+          <figure class="image is-4by3">
+              <img src="{{ item.img }}" alt="{{ item.name }}">
+          </figure>
+        </div>
+        <div class="card-content">
+          <p class="title is-4">{{ item.name }}</p>
+          <div class="content">
+            <ul>
+              <li><strong>${{ item.steam_price }}</strong> on Steam</li>
+              {% if item.drop_rate %}
+                <li>
+                  <small>
+                    Drop rate {{ item.drop_rate }}
+                  </small>
+                </li>
+              {% endif %}
+              <li>
+                <small>
+                  Updated
+                  <time datetime="{{ item.crated_at }}" class="tag is-light">
+                    {{ item.created_at|since }}
+                  </time>
+                  ago
+                </small>
+
+              </li>
+            </ul>
+          </div>
+          <footer class="card-footer">
+            <a href="{{ item.steam_url }}" target="_blank" class="card-footer-item has-text-grey-dark is-small">
+              Check it on Steam
+            </a>
+            <a href="{{ item.showcase_url }}" target="_blank" class="card-footer-item has-text-grey-dark is-size-7">
+              Check it on PUBG Showcase
+            </a>
+          </footer>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

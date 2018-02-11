@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block style %}
+  <style>
+    .notification li {
+      padding: 2px;
+    }
+    .tab-content {
+      display: none;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}{{ crate.name }}{% endblock %}
+{% block content %}
+
+  <section class="hero is-fullheight is-bold" id="crate-preview">
+    <div class="hero-head">
+      <nav class="breadcrumb is-centered has-succeeds-separator" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/"><span class="tag">Home</span></a></li>
+          <li class="is-active"><a href="#" aria-current="page">{{ crate.name }}</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns is-vcentered">
+          <div class="column is-5">
+            <figure class="image is-4by3">
+              <img src="{{ crate.img }}" alt="{{ crate.name }}">
+            </figure>
+          </div>
+          <div class="column is-6 is-offset-1">
+            <h1 class="title is-2 has-text-centered">
+              {{ crate.name }}
+            </h1>
+            {% set expensive_percent = crate['items']['expensive']['percent'] %}
+            {% set cheap_percent = crate['items']['cheap']['percent'] %}
+            <progress class="progress is-medium"
+                      value="{{ expensive_percent }}"
+                      max="100">
+              {{ expensive_percent }}
+            </progress>
+            <p>
+              <span class="tag is-success">{{ expensive_percent }} %</span> Expensive item drop chance
+            </p>
+            <p>
+              <span class="tag is-warning">{{ cheap_percent }} %</span> Cheap item drop chance
+            </p>
+            <br>
+            <div class="notification has-text-grey-darker	">
+              <ul>
+                {% if crate.need_key %}
+                  <li>
+                    <span class="tag is-danger">You need key to open crate.</span>
+                  </li>
+                {% endif %}
+                <li><a href="{{ crate.steam_url }}" target="_blank">Steam price</a> of crate is
+                  <strong class="has-text-primary">${{ crate.steam_price }}</strong>.
+                </li>
+                <li>There are <strong>{{ crate['items']['count'] }}</strong> items in this crate.</li>
+                <li>
+                  <strong class="has-text-success">{{ crate['items']['expensive']['count'] }}</strong>
+                  items are more expensive than crate.
+                  <strong class="has-text-danger">{{ crate['items']['cheap']['count'] }}</strong> items are cheaper.
+                </li>
+                <li>
+                  These data were crawled <strong>{{ crate.created_at|since }} ago</strong> from
+                  <a href="{{ crate.url }}" target="_blank">pubgshowcase.com</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-foot">
+      <div class="container">
+        <div class="tabs is-centered is-boxed">
+          <ul>
+            <li class="is-active" onclick="openTab(event)" data-target="expensive-items">
+              <a>More Expensive Items ({{ crate['items']['expensive']['count'] }})</a>
+            </li>
+            <li onclick="openTab(event)" data-target="cheap-items">
+              <a>Cheaper Items ({{ crate['items']['cheap']['count'] }})</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="item-section">
+    <div class="container">
+      <div class="column tab-content" id="expensive-items">
+        {% with items=crate['items']['expensive']['items'] %}
+          {% include "includes/item.html" %}
+        {% endwith %}
+      </div>
+      <div class="column tab-content" id="cheap-items">
+        {% with items=crate['items']['cheap']['items'] %}
+          {% include "includes/item.html" %}
+        {% endwith %}
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    function scrollToItemList() {
+      // end of the #create-preview is beginning of #item-section
+      var cratePreviewHeight = document.getElementById('crate-preview').clientHeight;
+      var tabButtonHeight = document.querySelectorAll('[data-target]')[0].clientHeight + 5;
+      // scroll top as tabButtonHeight to show button text
+      window.scrollTo(0, cratePreviewHeight - tabButtonHeight);
+    }
+
+    function showActiveTabContent(tabId) {
+      /*
+      Show tab content. If tabId passed, show content from tab which has passed tabId.
+      Otherwise, try to get tabId from elements which have "data-target" attribute.
+       */
+
+      var i;
+
+      if (tabId !== undefined) {
+        // hide all tab content
+        var tabContents = document.getElementsByClassName('tab-content');
+        var tabContentsLength = tabContents.length;
+
+        for (i = 0; i < tabContentsLength; i++) {
+          tabContents[i].style.display = "none";
+        }
+        // show tab content by passed tabId
+        document.getElementById(tabId).style.display = "block";
+        scrollToItemList();
+        return
+      }
+
+      // find elements which have "data-target" attribute
+      var tabLinks, tabLinksLength;
+      tabLinks = document.querySelectorAll('[data-target]');
+      tabLinksLength = tabLinks.length;
+
+      // get tabId if element has "is-active" class and show content
+      for (i = 0; i < tabLinksLength; i++) {
+        if (tabLinks[i].classList.contains('is-active')) {
+          document.getElementById(tabLinks[i].getAttribute('data-target')).style.display = "block";
+          break;
+        }
+      }
+
+    }
+
+    function openTab(event) {
+      var tabLinks, i, tabLinksLength;
+      tabLinks = document.querySelectorAll('[data-target]');
+      tabLinksLength = tabLinks.length;
+
+      // remove "is-active" class from all elements
+      for (i = 0; i < tabLinksLength; i++) {
+        tabLinks[i].classList.remove('is-active');
+      }
+
+      // add "is-active" class to clicked element and show its content
+      event.currentTarget.classList.add('is-active');
+      var e = event.currentTarget.getAttribute('data-target');
+      showActiveTabContent(e);
+    }
+
+    function randomSectionColor() {
+      var cratePreview = document.getElementById("crate-preview");
+      var classArray = ['is-primary', 'is-info', 'is-success', 'is-warning', 'is-danger', 'is-dark'];
+      var randomClass = classArray[Math.floor(Math.random() * classArray.length)];
+      cratePreview.className += (" " + randomClass);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      randomSectionColor();
+      showActiveTabContent();
+    });
+
+  </script>
+{% endblock %}
+
